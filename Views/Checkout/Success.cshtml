@@ -1,0 +1,75 @@
+@model Order
+
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+    var payment = Model.Payments.FirstOrDefault();
+}
+
+<div class="container my-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-success">✅ Đặt hàng thành công!</h2>
+        <p class="text-muted mb-2">Cảm ơn bạn đã mua hàng tại Golf King.</p>
+        <p class="fs-4 mb-1">Mã đơn hàng: <span class="fw-bold">@Model.OrderCode</span></p>
+        <p class="text-muted">Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-header fw-bold">Sản phẩm đã đặt</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var detail in Model.OrderDetails)
+                    {
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>
+                                @(detail.Product?.Name ?? "Sản phẩm")
+                                <span class="text-muted">× @detail.Quantity</span>
+                            </span>
+                            <span>@detail.LineTotal.ToString("N0") đ</span>
+                        </li>
+                    }
+                    <li class="list-group-item d-flex justify-content-between fw-bold">
+                        <span>Tổng cộng</span>
+                        <span class="text-danger">@Model.TotalAmount.ToString("N0") đ</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header fw-bold">Thông tin giao hàng</div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>@Model.User?.FullName</strong></p>
+                    <p class="mb-1">📞 @Model.User?.PhoneNumber</p>
+                    <p class="mb-1">✉️ @Model.User?.Email</p>
+                    <p class="mb-3">📍 @Model.ShippingAddress</p>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Note))
+                    {
+                        <p class="mb-3 text-muted">Ghi chú: @Model.Note</p>
+                    }
+
+                    <p class="mb-0">
+                        Thanh toán: <strong>@(payment?.Method.ToVietnamese() ?? "Chưa xác định")</strong>
+                        @if (payment != null)
+                        {
+                            <span class="text-muted">(@payment.Status.ToVietnamese())</span>
+                        }
+                    </p>
+
+                    @if (payment != null && payment.Method == PaymentMethod.BankTransfer && payment.Status == PaymentStatus.Unpaid)
+                    {
+                        <a asp-action="BankTransfer" asp-route-id="@Model.Id" class="btn btn-warning w-100 mt-3">
+                            🏦 Xem mã QR để chuyển khoản
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">← Tiếp tục mua sắm</a>
+    </div>
+</div>

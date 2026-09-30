@@ -1,0 +1,56 @@
+@model List<Order>
+
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container my-4">
+    <h2 class="fw-bold border-bottom pb-2 mb-4">🧾 Đơn hàng của tôi</h2>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info" role="alert">Bạn chưa có đơn hàng nào.</div>
+        <a asp-controller="Products" asp-action="Index" class="btn btn-primary">← Mua sắm ngay</a>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle bg-white shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Ngày đặt</th>
+                        <th class="text-end">Tổng tiền</th>
+                        <th class="text-center">Thanh toán</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th style="width: 90px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        var payment = order.Payments.FirstOrDefault();
+                        <tr>
+                            <td class="fw-bold">@order.OrderCode</td>
+                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-end">@order.TotalAmount.ToString("N0") đ</td>
+                            <td class="text-center small">
+                                @if (payment != null)
+                                {
+                                    <div>@payment.Method.ToVietnamese()</div>
+                                    <div class="text-muted">@payment.Status.ToVietnamese()</div>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <span class="badge @order.Status.ToBadgeClass()">@order.Status.ToVietnamese()</span>
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@order.Id">Xem</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

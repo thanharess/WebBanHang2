@@ -1,0 +1,80 @@
+@model List<CartItem>
+
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<div class="container my-4">
+    <h2 class="fw-bold border-bottom pb-2 mb-4">🛒 Giỏ hàng của bạn</h2>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info" role="alert">Giỏ hàng đang trống.</div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">← Tiếp tục mua sắm</a>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th class="text-end">Đơn giá</th>
+                        <th class="text-center" style="width: 200px;">Số lượng</th>
+                        <th class="text-end">Thành tiền</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded border me-3"
+                                         style="width: 64px; height: 48px; object-fit: cover;">
+                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId"
+                                       class="text-decoration-none">@item.ProductName</a>
+                                </div>
+                            </td>
+                            <td class="text-end">@item.Price.ToString("N0") đ</td>
+                            <td>
+                                <form asp-action="UpdateQuantity" method="post" class="d-flex justify-content-center gap-2">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="number" name="quantity" value="@item.Quantity" min="0"
+                                           class="form-control form-control-sm" style="width: 80px;" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Cập nhật</button>
+                                </form>
+                            </td>
+                            <td class="text-end fw-bold text-danger">@item.TotalPrice.ToString("N0") đ</td>
+                            <td class="text-end">
+                                <form asp-action="Remove" method="post"
+                                      onsubmit="return confirm('Xoá sản phẩm này khỏi giỏ hàng?');">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Xoá</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-end">Tổng cộng:</th>
+                        <th class="text-end text-danger fs-5">@Model.Sum(i => i.TotalPrice).ToString("N0") đ</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex gap-2">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">← Tiếp tục mua sắm</a>
+                <form asp-action="Clear" method="post" onsubmit="return confirm('Xoá toàn bộ giỏ hàng?');">
+                    <button type="submit" class="btn btn-outline-danger">Xoá toàn bộ</button>
+                </form>
+            </div>
+            <a asp-controller="Checkout" asp-action="Index" class="btn btn-primary btn-lg">Tiến hành đặt hàng →</a>
+        </div>
+    }
+</div>

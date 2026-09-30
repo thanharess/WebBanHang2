@@ -1,0 +1,64 @@
+@model Product
+
+@{
+    ViewData["Title"] = Model.Name;
+    var effectivePrice = Model.DiscountPrice ?? Model.Price;
+    var hasDiscount = Model.DiscountPrice.HasValue && Model.DiscountPrice.Value < Model.Price && Model.Price > 0;
+    var inStock = Model.StockQuantity > 0;
+}
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Sản phẩm</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Cột hình ảnh sản phẩm -->
+        <div class="col-md-6 mb-4">
+            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm border w-100" alt="@Model.Name" style="max-height: 450px; object-fit: cover;">
+        </div>
+
+        <!-- Cột thông tin sản phẩm -->
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-3">@Model.Name</h2>
+            <p class="text-muted">Danh mục: <span class="badge bg-secondary">@(Model.Category?.Name ?? "Chưa phân loại")</span></p>
+
+            <h3 class="text-danger fw-bold mb-3">
+                @effectivePrice.ToString("N0") đ
+                @if (hasDiscount)
+                {
+                    <span class="fs-6 text-muted text-decoration-line-through ms-2">@Model.Price.ToString("N0") đ</span>
+                    <span class="badge bg-danger ms-2">-@(((Model.Price - Model.DiscountPrice!.Value) / Model.Price * 100).ToString("0"))%</span>
+                }
+            </h3>
+
+            <p class="mb-4">@Model.Description</p>
+
+            <p class="text-muted mb-4">📦 Tồn kho sẵn có: <strong>@Model.StockQuantity sản phẩm</strong></p>
+
+            @if (inStock)
+            {
+                <form asp-controller="Cart" asp-action="Add" method="post" class="d-flex flex-wrap gap-2 align-items-end mb-3">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Products", new { id = Model.Id })" />
+                    <div>
+                        <label for="quantity" class="form-label mb-1">Số lượng</label>
+                        <input id="quantity" name="quantity" type="number" value="1" min="1" max="@Model.StockQuantity"
+                               class="form-control form-control-lg" style="width: 110px;" />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg px-4">🛒 Thêm vào giỏ hàng</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-lg">← Danh mục sản phẩm</a>
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-warning" role="alert">Sản phẩm tạm hết hàng.</div>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">← Danh mục sản phẩm</a>
+            }
+        </div>
+    </div>
+</div>

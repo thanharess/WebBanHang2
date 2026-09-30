@@ -1,0 +1,105 @@
+@model OrderListViewModel
+
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<h2 class="fw-bold mb-3">🧾 Quản lý đơn hàng</h2>
+
+<!-- Lọc theo trạng thái -->
+<ul class="nav nav-pills flex-wrap gap-2 mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(Model.Status == null ? "active" : "bg-white border")"
+           asp-action="Index" asp-route-q="@Model.Keyword">
+            Tất cả (@Model.AllCount)
+        </a>
+    </li>
+    @foreach (var status in OrderListViewModel.AllStatuses)
+    {
+        <li class="nav-item">
+            <a class="nav-link @(Model.Status == status ? "active" : "bg-white border")"
+               asp-action="Index" asp-route-status="@status" asp-route-q="@Model.Keyword">
+                @status.ToVietnamese() (@Model.CountOf(status))
+            </a>
+        </li>
+    }
+</ul>
+
+<form asp-action="Index" method="get" class="row g-2 mb-3">
+    <input type="hidden" name="status" value="@Model.Status" />
+    <div class="col-sm-6 col-md-4">
+        <input type="text" name="q" value="@Model.Keyword" class="form-control"
+               placeholder="Tìm theo mã đơn, tên khách hoặc số điện thoại..." />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Tìm</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Xoá lọc</a>
+    </div>
+</form>
+
+<p class="text-muted">Tìm thấy <strong>@Model.TotalItems</strong> đơn hàng.</p>
+
+@if (Model.Orders.Count == 0)
+{
+    <div class="alert alert-info">Không có đơn hàng nào phù hợp.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Điện thoại</th>
+                    <th>Ngày đặt</th>
+                    <th class="text-end">Tổng tiền</th>
+                    <th class="text-center">Thanh toán</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th style="width: 90px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    var payment = order.Payments.FirstOrDefault();
+                    <tr>
+                        <td class="fw-bold">@order.OrderCode</td>
+                        <td>@order.User?.FullName</td>
+                        <td>@order.User?.PhoneNumber</td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-end">@order.TotalAmount.ToString("N0") đ</td>
+                        <td class="text-center small">
+                            @if (payment != null)
+                            {
+                                <div>@payment.Method.ToVietnamese()</div>
+                                <div class="text-muted">@payment.Status.ToVietnamese()</div>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <span class="badge @order.Status.ToBadgeClass()">@order.Status.ToVietnamese()</span>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@order.Id">Xem</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.Page ? "active" : string.Empty)">
+                        <a class="page-link" asp-action="Index" asp-route-status="@Model.Status"
+                           asp-route-q="@Model.Keyword" asp-route-page="@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}

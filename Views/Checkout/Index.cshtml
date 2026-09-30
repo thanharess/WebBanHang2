@@ -1,0 +1,94 @@
+@model CheckoutViewModel
+@inject WebBanHang.Services.VnPayService VnPay
+
+@{
+    ViewData["Title"] = "Đặt hàng";
+}
+
+<div class="container my-4">
+    <h2 class="fw-bold border-bottom pb-2 mb-4">🧾 Thông tin đặt hàng</h2>
+
+    <form asp-action="PlaceOrder" method="post">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label"></label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="ShippingAddress" class="form-label"></label>
+                        <input asp-for="ShippingAddress" class="form-control" />
+                        <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Note" class="form-label"></label>
+                        <textarea asp-for="Note" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Note" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="PaymentMethod" class="form-label"></label>
+                        <select asp-for="PaymentMethod" class="form-select">
+                            <option value="@((int)WebBanHang.Models.PaymentMethod.Cod)">Thanh toán khi nhận hàng (COD)</option>
+                            <option value="@((int)WebBanHang.Models.PaymentMethod.BankTransfer)">Chuyển khoản ngân hàng (VietQR)</option>
+                            @if (VnPay.IsConfigured)
+                            {
+                                <option value="@((int)WebBanHang.Models.PaymentMethod.VnPay)">Thanh toán online qua VNPay</option>
+                            }
+                        </select>
+                        <div class="form-text">
+                            @if (VnPay.IsConfigured)
+                            {
+                                <span>Thanh toán online qua VNPay sử dụng tài khoản sandbox đã cấu hình.</span>
+                            }
+                            else
+                            {
+                                <span>Thanh toán online VNPay/MoMo chưa được cấu hình nên tạm ẩn.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-header fw-bold">Đơn hàng của bạn</div>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in Model.Items)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>@item.ProductName <span class="text-muted">× @item.Quantity</span></span>
+                                <span>@item.TotalPrice.ToString("N0") đ</span>
+                            </li>
+                        }
+                        <li class="list-group-item d-flex justify-content-between fw-bold">
+                            <span>Tổng cộng</span>
+                            <span class="text-danger">@Model.TotalAmount.ToString("N0") đ</span>
+                        </li>
+                    </ul>
+                    <div class="card-body d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Đặt hàng</button>
+                        <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary">← Về giỏ hàng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

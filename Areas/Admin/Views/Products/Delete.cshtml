@@ -1,0 +1,39 @@
+@model Product
+
+@{
+    ViewData["Title"] = "Xoá sản phẩm";
+    var usedInOrders = ViewData["UsedInOrders"] as bool? ?? false;
+}
+
+<h2 class="fw-bold mb-3 text-danger">🗑️ Xoá sản phẩm</h2>
+
+@if (usedInOrders)
+{
+    <div class="alert alert-warning" role="alert">
+        Sản phẩm này <strong>đã xuất hiện trong đơn hàng</strong> nên sẽ không xoá được
+        (để giữ đúng lịch sử doanh thu). Hãy đặt <strong>tồn kho = 0</strong> để ngừng bán.
+    </div>
+}
+
+<div class="card shadow-sm" style="max-width: 720px;">
+    <div class="card-body">
+        <div class="d-flex gap-3 mb-3">
+            <img src="@Model.ImageUrl" alt="@Model.Name" class="rounded border"
+                 style="width:120px;height:90px;object-fit:cover;" />
+            <div>
+                <h5 class="mb-1">@Model.Name</h5>
+                <p class="text-muted mb-1">Danh mục: @Model.Category?.Name</p>
+                <p class="mb-1">Giá bán: <strong>@Model.Price.ToString("N0") đ</strong></p>
+                <p class="mb-0">Tồn kho: <strong>@Model.StockQuantity</strong></p>
+            </div>
+        </div>
+
+        <p>Bạn có chắc muốn xoá sản phẩm này không?</p>
+
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-danger">Xoá</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">← Huỷ</a>
+        </form>
+    </div>
+</div>

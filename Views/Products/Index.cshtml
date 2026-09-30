@@ -1,0 +1,110 @@
+@model ProductListViewModel
+
+@{
+    ViewData["Title"] = "Sản phẩm";
+}
+
+<div class="container my-4">
+    <h2 class="fw-bold border-bottom pb-2 mb-4">🛍️ Danh mục sản phẩm</h2>
+
+    <!-- Bộ lọc: từ khoá + danh mục -->
+    <form asp-action="Index" method="get" class="row g-2 mb-3">
+        <div class="col-md-5">
+            <input asp-for="Keyword" class="form-control" placeholder="Tìm theo tên hoặc mô tả sản phẩm..." />
+        </div>
+        <div class="col-md-4">
+            <select asp-for="CategoryId" class="form-select"
+                    asp-items="@(new SelectList(Model.Categories, nameof(Category.Id), nameof(Category.Name)))">
+                <option value="">-- Tất cả danh mục --</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-fill">Tìm kiếm</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Xoá lọc</a>
+        </div>
+    </form>
+
+    <p class="text-muted">
+        Tìm thấy <strong>@Model.TotalItems</strong> sản phẩm
+        @if (!string.IsNullOrWhiteSpace(Model.Keyword))
+        {
+            <span>cho từ khoá "<strong>@Model.Keyword</strong>"</span>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
+        {
+            <span>trong danh mục "<strong>@Model.CategoryName</strong>"</span>
+        }
+    </p>
+
+    @if (Model.Products.Count == 0)
+    {
+        <div class="alert alert-info" role="alert">Không tìm thấy sản phẩm nào phù hợp.</div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-4 g-4 mb-4">
+            @foreach (var item in Model.Products)
+            {
+                var hasDiscount = item.DiscountPrice.HasValue && item.DiscountPrice.Value < item.Price;
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text text-muted small mb-1">@item.Category?.Name</p>
+                            <p class="card-text text-danger fw-bold mb-1">
+                                @((item.DiscountPrice ?? item.Price).ToString("N0")) đ
+                                @if (hasDiscount)
+                                {
+                                    <span class="fs-6 text-muted text-decoration-line-through ms-1">@item.Price.ToString("N0") đ</span>
+                                }
+                            </p>
+                            <p class="card-text text-muted small">Tồn kho: @item.StockQuantity</p>
+
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary mt-auto">Xem chi tiết</a>
+
+                            @if (item.StockQuantity > 0)
+                            {
+                                <form asp-controller="Cart" asp-action="Add" method="post" class="mt-2">
+                                    <input type="hidden" name="productId" value="@item.Id" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <input type="hidden" name="returnUrl" value="@Url.Action("Index", "Products", new { q = Model.Keyword, categoryId = Model.CategoryId, page = Model.Page })" />
+                                    <button type="submit" class="btn btn-primary w-100">🛒 Thêm vào giỏ</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-secondary w-100 mt-2" disabled>Hết hàng</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Phân trang sản phẩm">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.HasPrevious ? string.Empty : "disabled")">
+                        <a class="page-link" asp-action="Index" asp-route-q="@Model.Keyword"
+                           asp-route-categoryId="@Model.CategoryId" asp-route-page="@(Model.Page - 1)">← Trước</a>
+                    </li>
+
+                    @for (var i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.Page ? "active" : string.Empty)">
+                            <a class="page-link" asp-action="Index" asp-route-q="@Model.Keyword"
+                               asp-route-categoryId="@Model.CategoryId" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(Model.HasNext ? string.Empty : "disabled")">
+                        <a class="page-link" asp-action="Index" asp-route-q="@Model.Keyword"
+                           asp-route-categoryId="@Model.CategoryId" asp-route-page="@(Model.Page + 1)">Sau →</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+</div>

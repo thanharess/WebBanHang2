@@ -1,0 +1,180 @@
+@model StatisticsViewModel
+
+@{
+    ViewData["Title"] = "Thống kê";
+    string J(object value) => System.Text.Json.JsonSerializer.Serialize(value);
+}
+
+<h2 class="fw-bold mb-4">📈 Thống kê bán hàng</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Tổng doanh thu</div>
+                <div class="fs-4 fw-bold text-danger">@Model.TotalRevenue.ToString("N0") đ</div>
+                <div class="text-muted small">Không tính @Model.CancelledOrders đơn đã huỷ</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Tổng đơn hàng</div>
+                <div class="fs-4 fw-bold">@Model.TotalOrders</div>
+                <div class="text-muted small">Đã huỷ: @Model.CancelledOrders</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Giá trị đơn trung bình</div>
+                <div class="fs-4 fw-bold">@Model.AverageOrderValue.ToString("N0") đ</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Khách hàng</div>
+                <div class="fs-4 fw-bold">@Model.CustomerCount</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header fw-bold">Doanh thu 30 ngày gần nhất</div>
+            <div class="card-body">
+                <canvas id="dailyChart" height="110"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header fw-bold">Tỉ lệ đơn theo trạng thái</div>
+            <div class="card-body">
+                <canvas id="statusChart" height="230"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header fw-bold">Doanh thu 12 tháng gần nhất</div>
+            <div class="card-body">
+                <canvas id="monthlyChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header fw-bold">Top @Model.TopProductNames.Count sản phẩm bán chạy (theo số lượng)</div>
+            <div class="card-body">
+                @if (Model.TopProductNames.Count == 0)
+                {
+                    <p class="text-muted mb-0">Chưa có dữ liệu bán hàng.</p>
+                }
+                else
+                {
+                    <canvas id="topProductChart" height="220"></canvas>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/chartjs/chart.umd.min.js"></script>
+    <script>
+        const vnd = value => new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+
+        // 1) Doanh thu 30 ngày gần nhất
+        new Chart(document.getElementById('dailyChart'), {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(J(Model.DailyLabels)),
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: @Html.Raw(J(Model.DailyRevenue)),
+                    backgroundColor: 'rgba(13, 110, 253, 0.65)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => vnd(ctx.parsed.y) } }
+                },
+                scales: { y: { beginAtZero: true, ticks: { callback: v => vnd(v) } } }
+            }
+        });
+
+        // 2) Doanh thu 12 tháng gần nhất
+        new Chart(document.getElementById('monthlyChart'), {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(J(Model.MonthlyLabels)),
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: @Html.Raw(J(Model.MonthlyRevenue)),
+                    backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => vnd(ctx.parsed.y) } }
+                },
+                scales: { y: { beginAtZero: true, ticks: { callback: v => vnd(v) } } }
+            }
+        });
+
+        // 3) Top sản phẩm bán chạy
+        const topCanvas = document.getElementById('topProductChart');
+        if (topCanvas) {
+            new Chart(topCanvas, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(J(Model.TopProductNames)),
+                    datasets: [{
+                        label: 'Số lượng đã bán',
+                        data: @Html.Raw(J(Model.TopProductQuantities)),
+                        backgroundColor: 'rgba(255, 193, 7, 0.8)',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // 4) Tỉ lệ đơn theo trạng thái
+        new Chart(document.getElementById('statusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(J(Model.StatusLabels)),
+                datasets: [{
+                    data: @Html.Raw(J(Model.StatusCounts)),
+                    backgroundColor: ['#ffc107', '#0dcaf0', '#0d6efd', '#198754', '#6c757d']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+}

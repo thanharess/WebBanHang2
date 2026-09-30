@@ -1,0 +1,72 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    string NavClass(string controller) => controller == currentController
+        ? "list-group-item list-group-item-action active"
+        : "list-group-item list-group-item-action";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản trị Golf King</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bg-light">
+    <header>
+        <nav class="navbar navbar-dark bg-dark mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                    ⚙️ GOLF KING — Quản trị
+                </a>
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <a class="btn btn-sm btn-outline-light" asp-area="" asp-controller="Home" asp-action="Index">← Về trang bán hàng</a>
+                    <span class="text-white-50">👤 @User.Identity?.Name</span>
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-light">Đăng xuất</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row g-3">
+            <nav class="col-md-3 col-lg-2">
+                <div class="list-group shadow-sm">
+                    <a class="@NavClass("Dashboard")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">📊 Tổng quan</a>
+                    <a class="@NavClass("Orders")" asp-area="Admin" asp-controller="Orders" asp-action="Index">🧾 Đơn hàng</a>
+                    <a class="@NavClass("Products")" asp-area="Admin" asp-controller="Products" asp-action="Index">📦 Sản phẩm</a>
+                    <a class="@NavClass("Categories")" asp-area="Admin" asp-controller="Categories" asp-action="Index">🗂️ Danh mục</a>
+                    <a class="@NavClass("Statistics")" asp-area="Admin" asp-controller="Statistics" asp-action="Index">📈 Thống kê</a>
+                </div>
+            </nav>
+
+            <main class="col-md-9 col-lg-10 pb-5">
+                @if (TempData["Success"] is string successMessage)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @successMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    </div>
+                }
+                @if (TempData["Error"] is string errorMessage)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @errorMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

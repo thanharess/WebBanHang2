@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "chart.js@4.4.4",
+      "destination": "wwwroot/lib/chartjs/",
+      "files": [
+        "dist/chart.umd.min.js"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+﻿
+[GIAI ĐOẠN 1: THIẾT KẾ CƠ SỞ DỮ LIỆU (DATABASE)]
+ ├── Bước 1.1: Định nghĩa các bảng dữ liệu trong SQL Server
+ │    ├── Bảng Users (Khách hàng, Admin, Mật khẩu băm, Địa chỉ, Số điện thoại)
+ │    ├── Bảng Categories (Danh mục: Tên danh mục, Mô tả, Trạng thái)
+ │    ├── Bảng Products (Sản phẩm: Tên, Giá, Giá khuyến mãi, Số lượng tồn kho, Ảnh, FK_CategoryId)
+ │    ├── Bảng Orders (Đơn hàng: Mã đơn, Ngày đặt, Tổng tiền, Trạng thái đơn, FK_UserId)
+ │    └── Bảng OrderDetails (Chi tiết đơn: FK_OrderId, FK_ProductId, Số lượng mua, Giá tại thời điểm mua)
+ ├── Bước 1.2: Cài đặt Entity Framework Core (EF Core) vào Visual Studio
+ │    ├── Cài các NuGet package: Microsoft.EntityFrameworkCore.SqlServer và Tools
+ │    └── Viết code kết nối chuỗi (Connection String) trong file appsettings.json
+ └── Bước 1.3: Tạo các Model C# khớp với bảng SQL và chạy lệnh Migration để tạo Database
+
+[GIAI ĐOẠN 2: XÂY DỰNG KHUNG GIAO DIỆN (FRONTEND LAYOUT)]
+ ├── Bước 2.1: Tải và nhúng thư viện Bootstrap 5 hoặc Tailwind CSS vào Layout chung (_Layout.cshtml)
+ ├── Bước 2.2: Thiết kế khung trang chủ (Home Page)
+ │    ├── Thanh điều hướng (Navbar): Logo, Menu danh mục, Giỏ hàng, Ô tìm kiếm, Nút Đăng nhập
+ │    ├── Banner quảng cáo / Slide chạy ảnh sản phẩm nổi bật
+ │    └── Khu vực trưng bày Sản phẩm mới / Sản phẩm bán chạy (Grid sản phẩm có ảnh, tên, giá)
+ ├── Bước 2.3: Thiết kế trang chi tiết sản phẩm (Product Detail Page)
+ │    └── Ảnh lớn, thông tin chi tiết, chọn số lượng, nút "Thêm vào giỏ hàng"
+ └── Bước 2.4: Thiết kế trang Quản trị (Admin Dashboard Layout)
+     └── Giao diện sidebar quản lý riêng cho Admin (Quản lý sản phẩm, Duyệt đơn, Thống kê)
+
+[GIAI ĐOẠN 3: LẬP TRÌNH TÍNH NĂNG CỐT LÕI (BACKEND & CONTROLLER)]
+ ├── Bước 3.1: Module Xác thực (Authentication & Authorization)
+ │    ├── Viết tính năng Đăng ký tài khoản (mã hóa mật khẩu bằng BCrypt/ASP.NET Identity)
+ │    ├── Tính năng Đăng nhập / Đăng xuất, lưu Session hoặc Cookie
+ │    └── Phân quyền: Khách chỉ mua hàng, tài khoản Admin mới được vào trang quản trị
+ ├── Bước 3.2: Module Quản lý Sản phẩm & Danh mục (Dành cho Admin)
+ │    ├── Thêm / Sửa / Xóa / Xem danh sách sản phẩm (CRUD)
+ │    └── Viết code upload hình ảnh sản phẩm lưu vào thư mục wwwroot/images
+ ├── Bước 3.3: Module Giỏ hàng (Shopping Cart)
+ │    ├── Lưu trữ giỏ hàng tạm thời bằng Session hoặc LocalStorage
+ │    └── Các chức năng: Thêm sản phẩm, Thay đổi số lượng, Xóa sản phẩm, Tính tổng tiền
+ └── Bước 3.4: Module Đặt hàng & Thanh toán (Checkout)
+     └── Lưu đơn hàng vào bảng Orders, trừ số lượng tồn kho trong bảng Products khi đơn thành công
+
+[GIAI ĐOẠN 4: TÍCH HỢP CÁC DỊCH VỤ NÂNG CAO (THỰC TẾ & CHUYÊN NGHIỆP)]
+ ├── Bước 4.1: Tích hợp cổng thanh toán trực tuyến
+ │    └── Viết code kết nối Sandbox/Live API của VNPay, MoMo hoặc tạo mã QR chuyển khoản tự động (VietQR)
+ ├── Bước 4.2: Tích hợp vận chuyển (Shipping API)
+ │    └── Kết nối API tính phí ship tự động của Giao Hàng Nhanh (GHN) dựa theo địa chỉ khách nhập
+ └── Bước 4.3: Viết hệ thống báo cáo thống kê cho Admin
+     └── Thống kê doanh thu theo ngày/tháng, top sản phẩm bán chạy (hiển thị bằng biểu đồ Chart.js)
+
+[GIAI ĐOẠN 5: KIỂM THỬ VÀ ĐƯA LÊN INTERNET (DEPLOYMENT)]
+ ├── Bước 5.1: Kiểm thử toàn diện (Test lỗi logic giỏ hàng, test phân quyền, test giao diện mobile)
+ ├── Bước 5.2: Mua tên miền (Domain) và thuê Cloud VPS / Web Hosting hỗ trợ .NET
+ └── Bước 5.3: Publish website từ Visual Studio lên Server, cấu hình SSL (HTTPS) và trỏ Database thực tế

@@ -1,0 +1,57 @@
+@model TrackOrderViewModel
+
+@{
+    ViewData["Title"] = "Tra cứu đơn hàng";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="fw-bold mb-2 text-center">🔎 Tra cứu đơn hàng</h3>
+                    <p class="text-muted text-center mb-4">
+                        Nhập mã đơn hàng kèm số điện thoại hoặc email bạn đã dùng khi đặt hàng.
+                    </p>
+
+                    <form asp-action="Track" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="OrderCode" class="form-label"></label>
+                            <input asp-for="OrderCode" class="form-control" placeholder="ORD-20260930-00001" autofocus />
+                            <span asp-validation-for="OrderCode" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Contact" class="form-label"></label>
+                            <input asp-for="Contact" class="form-control" placeholder="0912345678 hoặc email@example.com" />
+                            <span asp-validation-for="Contact" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">Tra cứu</button>
+                    </form>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <hr />
+                        <p class="text-center mb-0">
+                            Bạn đã đăng nhập — <a asp-action="Index">xem tất cả đơn hàng của tôi</a>.
+                        </p>
+                    }
+                    else
+                    {
+                        <hr />
+                        <p class="text-center mb-0 text-muted small">
+                            Đăng nhập để xem lại toàn bộ đơn hàng của bạn mà không cần nhập lại thông tin.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,32 @@
+﻿@model WebBanHang.Models.Product
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Cột hình ảnh sản phẩm -->
+        <div class="col-md-6 mb-4">
+            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm border w-100" alt="@Model.Name" style="max-height: 450px; object-fit: cover;">
+        </div>
+
+        <!-- Cột thông tin sản phẩm -->
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-3">@Model.Name</h2>
+            <p class="text-muted">Danh mục: <span class="badge bg-secondary">@(Model.Category?.Name ?? "Chưa phân loại")</span></p>
+            
+            <h3 class="text-danger fw-bold mb-3">@Model.Price.ToString("N0") đ</h3>
+            
+            <p class="mb-4">@Model.Description</p>
+            
+            <p class="text-muted mb-4">📦 Tồn kho sẵn có: <strong>@Model.StockQuantity sản phẩm</strong></p>
+
+            <!-- Nút thêm vào giỏ hàng (tạm thời để nút bấm) -->
+            <div class="d-grid gap-2 d-md-block">
+                <a href="#" class="btn btn-primary btn-lg px-4 me-md-2">🛒 Thêm vào giỏ hàng</a>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg">← Về trang chủ</a>
+            </div>
+        </div>
+    </div>
+</div>

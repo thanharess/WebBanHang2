@@ -1,0 +1,23 @@
+@model ProductFormViewModel
+
+@{
+    ViewData["Title"] = "Sửa sản phẩm";
+}
+
+<h2 class="fw-bold mb-3">✏️ Sửa sản phẩm</h2>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="card shadow-sm">
+    <div class="card-body" style="max-width: 900px;">
+        <input type="hidden" asp-for="Id" />
+        <partial name="_ProductForm" model="Model" />
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">← Danh sách sản phẩm</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

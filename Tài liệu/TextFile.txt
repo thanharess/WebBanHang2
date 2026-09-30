@@ -1,0 +1,63 @@
+﻿Bước 1: Phân tích yêu cầu & Thiết kế cơ sở dữ liệu (Database Design)
+Trước khi viết code giao diện, bạn phải xác định website bán hàng của mình cần quản lý những gì.
+
+Xác định các bảng dữ liệu chính (Entity):
+
+Users (Khách hàng, Quản trị viên, phân quyền tài khoản).
+
+Categories (Danh mục sản phẩm: Điện thoại, Áo quần, Giày dép...).
+
+Products (Sản phẩm: Tên, giá bán, số lượng tồn kho, hình ảnh, mô tả).
+
+Orders & OrderDetails (Đơn hàng của khách và chi tiết các sản phẩm trong đơn).
+
+Reviews & Payments (Đánh giá sản phẩm và lịch sử thanh toán).
+
+Công cụ thực hiện: Dùng SQL Server và Entity Framework Core (EF Core) trong Visual Studio để ánh xạ các bảng này thành code C#.
+
+Bước 2: Thiết kế giao diện (UI/UX Design)
+Một trang web chuyên nghiệp phải đẹp, tốc độ tải nhanh, hiển thị tốt trên cả điện thoại lẫn máy tính (Responsive).
+
+Frontend Framework: Kết hợp HTML5, CSS3, JavaScript với Bootstrap 5 hoặc Tailwind CSS (hoặc dùng các Admin Template cao cấp như AdminLTE, SB Admin cho trang quản trị).
+
+Trang cần có:
+
+Trang khách hàng: Trang chủ, Danh mục sản phẩm, Chi tiết sản phẩm, Giỏ hàng, Thanh toán, Theo dõi đơn hàng, Đăng nhập/Đăng ký.
+
+Trang quản trị (Admin Dashboard): Thống kê doanh thu, Quản lý sản phẩm, Duyệt đơn hàng, Quản lý khách hàng.
+
+Bước 3: Lập trình Backend & Xây dựng tính năng (Core Development)
+Đây là phần cốt lõi sử dụng ASP.NET Core MVC hoặc ASP.NET Core Web API (nếu tách riêng frontend dùng React/Angular). Các tính năng bắt buộc phải có:
+
+Xác thực & Phân quyền (Authentication & Authorization): Đăng nhập bằng tài khoản, phân quyền rõ ràng (Khách hàng mua sắm vs Nhân viên quản trị).
+
+Hệ thống giỏ hàng & Đặt hàng: Thêm/sửa/xóa sản phẩm khỏi giỏ, tính tổng tiền, áp mã giảm giá (Voucher).
+
+Tích hợp thanh toán trực tuyến (Payment Gateway): Tích hợp VNPay, MoMo, hoặc chuyển khoản ngân hàng tự động (VietQR).
+
+Tích hợp vận chuyển: Kết nối API các đơn vị vận chuyển (Giao Hàng Nhanh - GHN, Giao Hàng Tiết Kiệm - GHTK) để tự động tính phí ship theo địa chỉ khách hàng.
+
+Bước 4: Kiểm thử và Vá lỗi (Testing & Bug Fixing)
+Trước khi đem sản phẩm ra mắt thị trường, website cần được kiểm tra kỹ lưỡng:
+
+Kiểm tra tính năng: Thử đặt hàng giả lập, test giỏ hàng xem có bị lỗi cộng trừ tiền không.
+
+Kiểm tra bảo mật: Chống lỗi SQL Injection, XSS (ASP.NET Core hỗ trợ sẵn khá tốt phần này).
+
+Kiểm tra tốc độ & Responsive: Đảm bảo web mượt mà trên iPhone, Android và các trình duyệt Chrome, Safari, Edge.
+
+Bước 5: Triển khai lên môi trường thực tế (Deployment)
+Đưa website từ máy tính cá nhân (localhost) lên Internet để mọi người cùng truy cập mua hàng:
+
+Mua tên miền (Domain): Ví dụ: tencuahang.vn hoặc .com.
+
+Thuê máy chủ (Hosting / Cloud VPS): Thuê VPS trên Microsoft Azure, AWS, hoặc các nhà cung cấp tại Việt Nam (Viettel, VNPT, PA Việt Nam) hỗ trợ chạy ứng dụng .NET.
+
+Cấu hình SSL (HTTPS): Cài chứng chỉ bảo mật để mã hóa dữ liệu khách hàng (khóa ổ khóa màu xanh trên trình duyệt).
+
+Bước 6: Vận hành, Marketing & Bảo trì (Operation & SEO)
+Tối ưu SEO: Cấu hình thẻ Meta, tốc độ tải trang, sitemap để Google dễ tìm thấy shop của bạn.
+
+Chăm sóc khách hàng & Quản lý đơn: Thường xuyên kiểm tra bảng quản trị để xử lý đơn hàng mới mỗi ngày.
+
+Sao lưu dữ liệu (Backup): Lập lịch backup cơ sở dữ liệu SQL Server định kỳ để tránh rủi ro mất mát dữ liệu.
